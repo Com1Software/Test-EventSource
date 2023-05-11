@@ -18,7 +18,8 @@ func main() {
 	if xctl {
 		es := eventsource.New(nil, nil)
 		defer es.Close()
-		http.Handle("/events", es)
+		// http.Handle("/events", es)
+		http.Handle("/static", es)
 		go func() {
 			id := 1
 			for {
@@ -28,7 +29,9 @@ func main() {
 			}
 		}()
 	}
-	Openbrowser("http://localhost:8080/events")
+
+	//	Openbrowser("http://localhost:8080/events")
+	Openbrowser("http://localhost:8080/static")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
