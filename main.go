@@ -12,17 +12,22 @@ import (
 )
 
 func main() {
-	es := eventsource.New(nil, nil)
-	defer es.Close()
-	http.Handle("/events", es)
-	go func() {
-		id := 1
-		for {
-			es.SendEventMessage("tick", "tick-event", strconv.Itoa(id))
-			id++
-			time.Sleep(2 * time.Second)
-		}
-	}()
+	fs := http.FileServer(http.Dir("static/"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	xctl := true
+	if xctl {
+		es := eventsource.New(nil, nil)
+		defer es.Close()
+		http.Handle("/events", es)
+		go func() {
+			id := 1
+			for {
+				es.SendEventMessage("tick", "tick-event", strconv.Itoa(id))
+				id++
+				time.Sleep(2 * time.Second)
+			}
+		}()
+	}
 	Openbrowser("http://localhost:8080/events")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
